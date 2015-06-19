@@ -14,6 +14,19 @@ def factorize(to_factor)
 	return factors
 end
 
+# takes an int and returns a list of all factors in order from smallest to largest
+def all_factors(to_factor)
+  limit = Math.sqrt(to_factor)
+  small = []
+  large = []
+  (1..(limit.to_i)).each do |i|
+    next unless to_factor % i == 0
+    small << i
+    large << to_factor / i unless i == limit
+  end
+  small + large.reverse
+end
+
 
 # returns a list of all primes up to limit using seive of eratothenes
 def prime_sieve(limit)
@@ -53,6 +66,21 @@ def prime_sieve2(limit)
 	return primes
 end
 
+@prime_list = []
+# reads a list of primes from primes.txt and returns it in an array
+def prime_list
+  return @prime_list unless @prime_list.empty?
+  File.open('primes.txt') do |file|
+    while (!file.eof?)
+      line = file.readline
+      parts = line.split(',')
+      parts.each do |s|
+        @prime_list << s.to_i unless s.empty? || s.to_i == 0
+      end
+    end
+  end
+  @prime_list
+end
 
 # takes a string or other input and returns whether it's to_s is a palindrome
 def is_palindrome(input, downcase = false)
@@ -77,6 +105,7 @@ end
 	1000000000000 => 'trillion', 1000000000000000 => 'quadrillion'
 }
 
+# takes a number less than 1 quintillion and returns that number spelled out in words
 def number_to_words(n, recursive = false)
 	start = n
 	order = [1000000000000000, 1000000000000, 1000000000, 1000000, 1000]
@@ -100,5 +129,33 @@ def number_to_words(n, recursive = false)
 		parts << "#{@ntw[n - n % 10]}#{n % 10 == 0 ? "" : "-#{@ntw[n % 10]}"}"
 	end
 	parts.join(" ")
+end
+
+@dcs = [31,28,31,30,31,30,31,31,30,31,30,31]
+@day_names = ['Sunday', 'Monday', "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+
+# takes a date string formated dd/mm/yyyy and returns the day of the week
+# currently only works for days > 1/1/1900
+def day_of_week(date)
+  parts = date.split /[-\/]/
+  month = parts[0].to_i
+  day = parts[1].to_i
+  year = parts[2].to_i
+  current = 0 # at Jan 1, 1900
+  
+  (1900...year).each do |y|
+    current += 365
+    current += 1 if (y % 4 == 0 && (y % 100 != 0 || y % 400 == 0))
+  end
+  (1...month).each do |m|
+    current += @dcs[m - 1]
+    current += 1 if m == 2 && (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0))
+  end
+  current += day
+  return @day_names[current % 7]
+end
+
+def factorial(n)
+  return (1..n).to_a.inject(1){ |a, b| a * b }
 end
 
