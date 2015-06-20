@@ -6,7 +6,7 @@ result = []
 
 while place < 1000000
   nums.each do |x|
-    f = factorial(nums.size - 1)
+    f = (nums.size - 1).factorial
     if (place + f <= 1000000)
       place += f
     else

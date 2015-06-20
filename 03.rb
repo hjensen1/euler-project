@@ -1,3 +1,3 @@
 require './functions.rb'
 
-puts factorize(600851475143)
+puts 600851475143.factorize

@@ -9,12 +9,12 @@ def recur(list)
     a = combine_digits(list[0,2])
     b = combine_digits(list[2,5])
     c = a * b
-    ds = digits_of(c)
+    ds = c.digits
     @results << c if (list + ds).sort == @digits
     a = combine_digits(list[0,1])
     b = combine_digits(list[1,5])
     c = a * b
-    ds = digits_of(c)
+    ds = c.digits
     @results << c if (list + ds).sort == @digits
     return
   end

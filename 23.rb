@@ -3,7 +3,7 @@ require './functions.rb'
 abundants = []
 
 (12..28123).each do |i|
-  abundants << i if all_factors(i).inject(-i){ |a,b| a + b } > i
+  abundants << i if i.all_factors.inject(-i){ |a,b| a + b } > i
 end
 
 results = []

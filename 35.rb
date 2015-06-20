@@ -4,7 +4,7 @@ list = []
 
 prime_list.each do |p|
   break if p > 1000000
-  digits = digits_of(p)
+  digits = p.digits
   start = digits.dup
   digits.unshift(digits.pop)
   check = true

@@ -4,7 +4,7 @@ hash = {}
 base = {}
 
 (2..100).each do |a|
-  base[a] = factorize(a)
+  base[a] = a.factorize
 end
 
 (2..100).each do |a|

@@ -13,7 +13,7 @@ prime_list.each do |p|
     if v < p
       sum += 1
       hash[i][0] *= 2
-      hash[i][1] = power(i, hash[i][0])
+      hash[i][1] = i ^ hash[i][0]
       if hash[i][1] > 16000000
         small_hash.delete(i)
       else

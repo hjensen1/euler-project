@@ -1,42 +1,4 @@
 
-# takes an int and returns a hash of its prime factors to the number of times they occur
-def factorize(to_factor)
-	factors = Hash.new(0)
-	i = 2
-	while (to_factor > 1) do
-		if to_factor % i == 0
-			factors[i] += 1
-			to_factor /= i
-		else
-			i += 1
-		end
-	end
-	return factors
-end
-
-# takes an int and returns a list of all factors in order from smallest to largest
-def all_factors(to_factor)
-  limit = Math.sqrt(to_factor)
-  small = []
-  large = []
-  (1..(limit.to_i)).each do |i|
-    next unless to_factor % i == 0
-    small << i
-    large << to_factor / i unless i == limit
-  end
-  small + large.reverse
-end
-
-# takes two numbers x and y and returns x ^ y
-def power(x, y)
-  prod = 1
-  y.times do
-    prod *= x
-  end
-  prod
-end
-
-
 # returns a list of all primes up to limit using seive of eratothenes
 def prime_sieve(limit)
 	primes = []
@@ -50,7 +12,6 @@ def prime_sieve(limit)
 		end
 		next if composite
 		primes << i
-		puts i
 	end
 	return primes
 end
@@ -104,42 +65,6 @@ def is_palindrome(input, downcase = false)
 	return true
 end
 
-@ntw = {
-	0 => 'zero', 1 => 'one', 2 => 'two', 3 => 'three', 4 => 'four', 5 => 'five',
-	6 => 'six', 7 => 'seven', 8 => 'eight', 9 => 'nine', 10 => 'ten',
-	11 => 'eleven', 12 => 'twelve', 13 => 'thirteen', 14 => 'fourteen', 15 => 'fifteen',
-	16 => 'sixteen', 17 => 'seventeen', 18 => 'eighteen', 19 => 'nineteen', 20 => 'twenty',
-	30 => 'thirty', 40 => 'forty', 50 => 'fifty', 60 => 'sixty', 70 => 'seventy', 80 => 'eighty',
-	90 => 'ninety', 100 => 'hundred', 1000 => 'thousand', 1000000 => 'million', 1000000000 => 'billion',
-	1000000000000 => 'trillion', 1000000000000000 => 'quadrillion'
-}
-
-# takes a number less than 1 quintillion and returns that number spelled out in words
-def number_to_words(n, recursive = false)
-	start = n
-	order = [1000000000000000, 1000000000000, 1000000000, 1000000, 1000]
-	parts = []
-	order.each do |i|
-		if n >= i
-			parts << number_to_words(n / i, true) << @ntw[i]
-			n = n % i
-		end
-	end
-	if n >= 100
-		parts << @ntw[n / 100] << @ntw[100]
-		n = n % 100
-	end
-	if n > 0 && start > 100 && !recursive
-		parts << 'and'
-	end
-	if n <= 20
-		parts << @ntw[n] unless n == 0
-	else
-		parts << "#{@ntw[n - n % 10]}#{n % 10 == 0 ? "" : "-#{@ntw[n % 10]}"}"
-	end
-	parts.join(" ")
-end
-
 @dcs = [31,28,31,30,31,30,31,31,30,31,30,31]
 @day_names = ['Sunday', 'Monday', "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
@@ -164,20 +89,6 @@ def day_of_week(date)
   return @day_names[current % 7]
 end
 
-def factorial(n)
-  return (1..n).to_a.inject(1){ |a, b| a * b }
-end
-
-# takes a number and returns an array containing its digits as ints
-def digits_of(n)
-  list = []
-  while n > 0 
-    list << n % 10
-    n /= 10
-  end
-  list.reverse
-end
-
 def combine_digits(list)
   sum = 0
   list.each do |i|
@@ -199,12 +110,103 @@ def ways_to_sum(n, list)
 end
 
 class Array
-  def sum
-    self.inject(0){ |a, b| a + b}
+  def sum(start = 0)
+    self.inject(start){ |a, b| a + b}
   end
   
-  def product
-    self.inject(1){ |a,b| a * b }
+  def product(start = 1)
+    self.inject(start){ |a,b| a * b }
   end
+end
+
+class Fixnum
+  def digits(base = 10)
+    n = self
+    list = []
+    while n > 0 
+      list << n % base
+      n /= base
+    end
+    list.reverse
+  end
+  
+  # returns a hash of its prime factors to the number of times they occur
+  def factorize
+    n = self
+  	factors = Hash.new(0)
+  	i = 2
+  	while (n > 1) do
+  		if n % i == 0
+  			factors[i] += 1
+  			n /= i
+  		else
+  			i += 1
+  		end
+  	end
+  	return factors
+  end
+
+  # takes an int and returns a list of all factors in order from smallest to largest
+  def all_factors
+    limit = Math.sqrt(self)
+    small = []
+    large = []
+    (1..(limit.to_i)).each do |i|
+      next unless self % i == 0
+      small << i
+      large << self / i unless i == limit
+    end
+    small + large.reverse
+  end
+  
+  def ^(y)
+    prod = 1
+    y.times do
+      prod *= self
+    end
+    prod
+  end
+  
+  NTW = {
+  	0 => 'zero', 1 => 'one', 2 => 'two', 3 => 'three', 4 => 'four', 5 => 'five',
+  	6 => 'six', 7 => 'seven', 8 => 'eight', 9 => 'nine', 10 => 'ten',
+  	11 => 'eleven', 12 => 'twelve', 13 => 'thirteen', 14 => 'fourteen', 15 => 'fifteen',
+  	16 => 'sixteen', 17 => 'seventeen', 18 => 'eighteen', 19 => 'nineteen', 20 => 'twenty',
+  	30 => 'thirty', 40 => 'forty', 50 => 'fifty', 60 => 'sixty', 70 => 'seventy', 80 => 'eighty',
+  	90 => 'ninety', 100 => 'hundred', 1000 => 'thousand', 1000000 => 'million', 1000000000 => 'billion',
+  	1000000000000 => 'trillion', 1000000000000000 => 'quadrillion'
+  }
+
+  # takes a number less than 1 quintillion and returns that number spelled out in words
+  def to_words(recursive = false)
+    n = self
+  	start = n
+  	order = [1000000000000000, 1000000000000, 1000000000, 1000000, 1000]
+  	parts = []
+  	order.each do |i|
+  		if n >= i
+  			parts << (n / i).to_words(true) << NTW[i]
+  			n = n % i
+  		end
+  	end
+  	if n >= 100
+  		parts << NTW[n / 100] << NTW[100]
+  		n = n % 100
+  	end
+  	if n > 0 && start > 100 && !recursive
+  		parts << 'and'
+  	end
+  	if n <= 20
+  		parts << NTW[n] unless n == 0
+  	else
+  		parts << "#{NTW[n - n % 10]}#{n % 10 == 0 ? "" : "-#{NTW[n % 10]}"}"
+  	end
+  	parts.join(" ")
+  end
+  
+  def factorial
+    return (1..self).to_a.inject(1){ |a, b| a * b }
+  end
+
 end
 
