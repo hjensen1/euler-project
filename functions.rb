@@ -27,6 +27,15 @@ def all_factors(to_factor)
   small + large.reverse
 end
 
+# takes two numbers x and y and returns x ^ y
+def power(x, y)
+  prod = 1
+  y.times do
+    prod *= x
+  end
+  prod
+end
+
 
 # returns a list of all primes up to limit using seive of eratothenes
 def prime_sieve(limit)
@@ -73,7 +82,7 @@ def prime_list
   File.open('primes.txt') do |file|
     while (!file.eof?)
       line = file.readline
-      parts = line.split(',')
+      parts = line.split(' ')
       parts.each do |s|
         @prime_list << s.to_i unless s.empty? || s.to_i == 0
       end
@@ -157,5 +166,45 @@ end
 
 def factorial(n)
   return (1..n).to_a.inject(1){ |a, b| a * b }
+end
+
+# takes a number and returns an array containing its digits as ints
+def digits_of(n)
+  list = []
+  while n > 0 
+    list << n % 10
+    n /= 10
+  end
+  list.reverse
+end
+
+def combine_digits(list)
+  sum = 0
+  list.each do |i|
+    sum *= 10
+    sum += i
+  end
+  sum
+end
+
+# returns the number of unique ways to add to n, using the numbers in the list
+def ways_to_sum(n, list)
+  return 1 if n == 0
+  return 0 if list.empty?
+  count = 0
+  (0..(n / list[0])).each do |i|
+    count += ways_to_sum(n - list[0] * i, list[1, list.length])
+  end
+  return count
+end
+
+class Array
+  def sum
+    self.inject(0){ |a, b| a + b}
+  end
+  
+  def product
+    self.inject(1){ |a,b| a * b }
+  end
 end
 
