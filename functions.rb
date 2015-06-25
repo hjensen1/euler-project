@@ -1,4 +1,8 @@
 
+def is_prime(n)
+  return prime_list.bsearch{|x| x >= n} == n
+end
+
 # returns a list of all primes up to limit using seive of eratothenes
 def prime_sieve(limit)
 	primes = []
@@ -52,9 +56,9 @@ def prime_list
   @prime_list
 end
 
-# takes a string or other input and returns whether it's to_s is a palindrome
+# takes a string or other input and returns whether it is a palindrome
 def is_palindrome(input, downcase = false)
-	input = "#{input}"
+	input = "#{input}" if input.class == Fixnum || input.class == Float
 	(0...(input.length / 2)).each do |i|
 		if downcase
 			return false if input[i].downcase != input[-(i + 1)].downcase
