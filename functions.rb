@@ -40,20 +40,27 @@ def prime_sieve2(limit)
 	return primes
 end
 
-@prime_list = []
-# reads a list of primes from primes.txt and returns it in an array
+# convenience method for accessing the primes list
 def prime_list
-  return @prime_list unless @prime_list.empty?
-  File.open('primes.txt') do |file|
-    while (!file.eof?)
-      line = file.readline
-      parts = line.split(' ')
-      parts.each do |s|
-        @prime_list << s.to_i unless s.empty? || s.to_i == 0
+  return Primes.prime_list
+end
+
+class Primes
+  @prime_list = []
+  # reads a list of primes from primes.txt and returns it in an array
+  def self.prime_list
+    return @prime_list unless @prime_list.empty?
+    File.open('primes.txt') do |file|
+      while (!file.eof?)
+        line = file.readline
+        parts = line.split(' ')
+        parts.each do |s|
+          @prime_list << s.to_i unless s.empty? || s.to_i == 0
+        end
       end
     end
+    @prime_list
   end
-  @prime_list
 end
 
 # takes a string or other input and returns whether it is a palindrome
@@ -69,6 +76,12 @@ def is_palindrome(input, downcase = false)
 	return true
 end
 
+def read_input(name)
+  a = File.open(name) do |file|
+  	file.readlines.first.split(',').map{|s| s.gsub('"', '')}
+  end
+end
+
 @dcs = [31,28,31,30,31,30,31,31,30,31,30,31]
 @day_names = ['Sunday', 'Monday', "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
@@ -80,7 +93,7 @@ def day_of_week(date)
   day = parts[1].to_i
   year = parts[2].to_i
   current = 0 # at Jan 1, 1900
-  
+
   (1900...year).each do |y|
     current += 365
     current += 1 if (y % 4 == 0 && (y % 100 != 0 || y % 400 == 0))
@@ -117,32 +130,41 @@ class Array
   def sum(start = 0)
     self.inject(start){ |a, b| a + b}
   end
-  
+
   def product(start = 1)
     self.inject(start){ |a,b| a * b }
+  end
+
+  def binclude?(n)
+    return self.bsearch{ |x| x >= n } == n
   end
 end
 
 class Fixnum
+  def is_prime
+    return Primes.prime_list.bsearch{|x| x >= self} == self
+  end
+  
   def digits(base = 10)
     n = self
     list = []
-    while n > 0 
+    while n > 0
       list << n % base
       n /= base
     end
     list.reverse
   end
-  
+
   # returns a hash of its prime factors to the number of times they occur
   def factorize
     n = self
   	factors = Hash.new(0)
-  	i = 2
+  	i = 0
   	while (n > 1) do
-  		if n % i == 0
-  			factors[i] += 1
-  			n /= i
+      p = Primes.prime_list[i]
+  		if n % p == 0
+  			factors[p] += 1
+  			n /= p
   		else
   			i += 1
   		end
@@ -162,7 +184,7 @@ class Fixnum
     end
     small + large.reverse
   end
-  
+
   def ^(y)
     prod = 1
     y.times do
@@ -170,7 +192,7 @@ class Fixnum
     end
     prod
   end
-  
+
   NTW = {
   	0 => 'zero', 1 => 'one', 2 => 'two', 3 => 'three', 4 => 'four', 5 => 'five',
   	6 => 'six', 7 => 'seven', 8 => 'eight', 9 => 'nine', 10 => 'ten',
@@ -207,10 +229,9 @@ class Fixnum
   	end
   	parts.join(" ")
   end
-  
+
   def factorial
     return (1..self).to_a.inject(1){ |a, b| a * b }
   end
 
 end
-

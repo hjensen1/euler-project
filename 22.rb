@@ -1,9 +1,5 @@
-
-a = nil
-File.open('input_22.txt') do |file|
-	a = file.readlines.first.split(',').map{|s| s.gsub('"', '')}
-end
-
+require './functions.rb'
+a = read_input('input_22.txt')
 a.sort!
 
 sum = 0
