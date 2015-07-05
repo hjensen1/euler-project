@@ -5,7 +5,7 @@ def is_triangular(n)
   return f * (f + 1) / 2 == n
 end
 
-a = read_input('input_42.txt')
+a = read_input('input_42.txt').first
 base = 'A'.getbyte(0) - 1
 count = 0
 

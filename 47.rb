@@ -2,8 +2,15 @@ require './functions.rb'
 
 count = 0
 first = 0
-(1..100000).each do |n|
-  next if n.is_prime
+(1..1000000).each do |n|
+  if !n.is_prime? && n.factorize.size == 4
+    first = n if count == 0
+    count += 1
+    break if count == 4
+  else
+    count = 0
+    first = 0
+  end
 end
 
 puts first

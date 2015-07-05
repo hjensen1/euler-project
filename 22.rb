@@ -1,5 +1,5 @@
 require './functions.rb'
-a = read_input('input_22.txt')
+a = read_input('input_22.txt').first
 a.sort!
 
 sum = 0

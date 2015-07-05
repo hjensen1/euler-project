@@ -1,31 +1,36 @@
 require './functions.rb'
 
 numbers = []
+parts = []
 (1..5000).each do |i|
   numbers << i * (3 * i - 1) / 2
+  parts << [i, i * (i - 1) / 2]
 end
 
-min = 1000000
 n1 = 0
 n2 = 0
 
-(1..((numbers.size - 1) / 3)).each do |i|
-  x = numbers[i * 3 - 1]
-  (i..((numbers.size - 1) / 3)).each do |j|
-    y = numbers[j * 3 - 1]
+numbers.each_with_index do |x, i|
+  puts i if i % 1000 == 0
+  prev = 0
+  ((i + 1)...numbers.size).each do |j|
+    y = numbers[j]
+    break if x < y - prev && prev > 0
     sum = x + y
-    next unless numbers.bsearch{ |a| a >= sum} == sum
-    diff = x > y ? x - y : y - x
-    next unless numbers.bsearch{ |a| a >= diff} == diff
-    if diff < min
-      min = diff
-      n1 = x
-      n2 = y
+    check = false
+    diff = y - x
+    if numbers.binclude?(sum)
+      if numbers.binclude?(diff)
+        check = true
+        n1 = x
+        n2 = y
+        break
+      end
     end
+    break if check
+    prev = y
   end
-  break if min < 1000000
 end
-
 puts n1
 puts n2
-puts min
+puts n2 - n1

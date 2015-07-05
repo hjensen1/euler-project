@@ -1,8 +1,4 @@
 
-def is_prime(n)
-  return prime_list.bsearch{|x| x >= n} == n
-end
-
 # returns a list of all primes up to limit using seive of eratothenes
 def prime_sieve(limit)
 	primes = []
@@ -40,32 +36,41 @@ def prime_sieve2(limit)
 	return primes
 end
 
-# convenience method for accessing the primes list
+# convenience method / backwards compatibility for accessing the primes list
 def prime_list
   return Primes.prime_list
 end
 
 class Primes
+	@pages = 1
   @prime_list = []
-  # reads a list of primes from primes.txt and returns it in an array
+  # reads a list of primes from primes.txt files and returns it in an array
+	# reads only primes1.txt normally (first 1 million primes)
+	# set Primes.pages to a different value to read more millions
   def self.prime_list
     return @prime_list unless @prime_list.empty?
-    File.open('primes.txt') do |file|
-      while (!file.eof?)
-        line = file.readline
-        parts = line.split(' ')
-        parts.each do |s|
-          @prime_list << s.to_i unless s.empty? || s.to_i == 0
-        end
-      end
-    end
+		(1..@pages).each do |i|
+	    File.open("primes#{i}.txt") do |file|
+	      while (!file.eof?)
+	        line = file.readline
+	        parts = line.split(' ')
+	        parts.each do |s|
+	          @prime_list << s.to_i unless s.empty? || s.to_i == 0
+	        end
+	      end
+	    end
+		end
     @prime_list
   end
+	
+	def self.set_pages(p)
+		@pages = p
+	end
 end
 
 # takes a string or other input and returns whether it is a palindrome
 def is_palindrome(input, downcase = false)
-	input = "#{input}" if input.class == Fixnum || input.class == Float
+	input = "#{input}" if input.class == Fixnum || input.class == Float || input.class == Bignum
 	(0...(input.length / 2)).each do |i|
 		if downcase
 			return false if input[i].downcase != input[-(i + 1)].downcase
@@ -76,9 +81,19 @@ def is_palindrome(input, downcase = false)
 	return true
 end
 
-def read_input(name)
+def read_input(name, split = ',', gsub = '"')
   a = File.open(name) do |file|
-  	file.readlines.first.split(',').map{|s| s.gsub('"', '')}
+  	result = file.readlines
+		result.each_index do |i|
+			result[i] = result[i].split(split).map{|s| s.gsub(gsub, '')}
+		end
+		result
+  end
+end
+
+def read_input2(name)
+  a = File.open(name) do |file|
+  	file.readlines.first.split(' ').map{|s| s.gsub('"', '')}
   end
 end
 
@@ -141,7 +156,15 @@ class Array
 end
 
 class Fixnum
-  def is_prime
+  def is_prime?
+		if self > Primes.prime_list.last
+			sqrt = Math.sqrt(self)
+			Primes.prime_list.each do |p|
+				break if p > sqrt
+				return false if self % p == 0
+			end
+			return true
+		end
     return Primes.prime_list.bsearch{|x| x >= self} == self
   end
   
@@ -233,5 +256,22 @@ class Fixnum
   def factorial
     return (1..self).to_a.inject(1){ |a, b| a * b }
   end
+	
+	def c(y)
+		self.factorial / y.factorial / (self - y).factorial
+	end
 
 end
+
+class Bignum
+  def digits(base = 10)
+    n = self
+    list = []
+    while n > 0
+      list << n % base
+      n /= base
+    end
+    list.reverse
+  end
+end
+

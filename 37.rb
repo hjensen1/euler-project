@@ -10,7 +10,7 @@ prime_list.each do |p|
   (1..dp.size).each do |i|
     a1 = combine_digits(dp[i,dp.length])
     a2 = combine_digits(dp[0, dp.length - i])
-    if (!is_prime(a1) || !is_prime(a2)) && (a1 > 0 && a2 > 0)
+    if (!a1.is_prime? || !a2.is_prime?) && (a1 > 0 && a2 > 0)
       check = false
       break
     end
