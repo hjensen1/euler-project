@@ -1,3 +1,4 @@
+require 'openssl'
 
 # returns a list of all primes up to limit using seive of eratothenes
 def prime_sieve(limit)
@@ -15,7 +16,6 @@ def prime_sieve(limit)
 	end
 	return primes
 end
-
 
 # returns a list of the first n primes using seive of eratothenes
 def prime_sieve2(limit)
@@ -36,6 +36,32 @@ def prime_sieve2(limit)
 	return primes
 end
 
+# this is a quick pseudoprime test with 100% accuracy for numbers into the billions
+# unfortunately, just binary searching the prime_list is faster for numbers with those bounds
+def miller_rabin(n)
+	s = n - 1
+	r = 0
+	while s % 2 == 0
+		r += 1
+		s /= 2
+	end
+	[2, 7, 61].each do |a|
+		x = a.to_bn.mod_exp(s, n)
+		next if x == 1 || x == n - 1
+		check = false
+		(r - 1).times do
+			x = (x * x) % n
+			return false if x == 1
+			if x == n - 1
+				check = true
+				break
+			end
+		end
+		return false unless check
+	end
+	return true
+end
+
 # convenience method / backwards compatibility for accessing the primes list
 def prime_list
   return Primes.prime_list
@@ -47,8 +73,9 @@ class Primes
   # reads a list of primes from primes.txt files and returns it in an array
 	# reads only primes1.txt normally (first 1 million primes)
 	# set Primes.pages to a different value to read more millions
-  def self.prime_list
-    return @prime_list unless @prime_list.empty?
+  def self.prime_list(force_update = false)
+    return @prime_list unless @prime_list.empty? && !force_update
+		@prime_list = []
 		(1..@pages).each do |i|
 	    File.open("primes#{i}.txt") do |file|
 	      while (!file.eof?)
@@ -65,6 +92,7 @@ class Primes
 	
 	def self.set_pages(p)
 		@pages = p
+		self.prime_list(true)
 	end
 end
 
@@ -91,10 +119,20 @@ def read_input(name, split = ',', gsub = '"')
   end
 end
 
-def read_input2(name)
-  a = File.open(name) do |file|
-  	file.readlines.first.split(' ').map{|s| s.gsub('"', '')}
-  end
+def xor_encode(input, code)
+	input = input.unpack("C*") if input.class == String
+	code = code.unpack("C*") if code.class == String
+	decoded = []
+	input.each_with_index do |x, i|
+		decoded << (x ^ code[i % code.size])
+	end
+	decoded.pack("C*")
+end
+
+@word_list = nil
+
+def word_list
+	@word_list ||= read_input('english_words.txt', ' ', '').flatten
 end
 
 @dcs = [31,28,31,30,31,30,31,31,30,31,30,31]
@@ -121,10 +159,10 @@ def day_of_week(date)
   return @day_names[current % 7]
 end
 
-def combine_digits(list)
+def combine_digits(list, base = 10)
   sum = 0
   list.each do |i|
-    sum *= 10
+    sum *= base
     sum += i
   end
   sum
@@ -208,14 +246,6 @@ class Fixnum
     small + large.reverse
   end
 
-  def ^(y)
-    prod = 1
-    y.times do
-      prod *= self
-    end
-    prod
-  end
-
   NTW = {
   	0 => 'zero', 1 => 'one', 2 => 'two', 3 => 'three', 4 => 'four', 5 => 'five',
   	6 => 'six', 7 => 'seven', 8 => 'eight', 9 => 'nine', 10 => 'ten',
@@ -274,4 +304,27 @@ class Bignum
     list.reverse
   end
 end
+
+class Timer
+	def self.start
+		@start_time = Time.now
+	end
+	
+	def self.stop
+		@stop_time = Time.now
+	end
+	
+	def self.print(start = @start_time, stop = @stop_time)
+		stop ||= Time.now
+		puts "Took #{(stop.to_f - start.to_f).round(4)} seconds."
+	end
+	
+	def self.mark(num)
+		@marks ||= {}
+		@marks[num] = Time.now
+	end
+end
+
+prime_list
+Timer.start
 

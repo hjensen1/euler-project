@@ -6,7 +6,7 @@ sum = 0
 (10..360000).each do |i|
   s = 0
   i.digits.each do |d|
-    s += d ^ 5
+    s += d ** 5
     break if s > i
   end
   sum += s if s == i

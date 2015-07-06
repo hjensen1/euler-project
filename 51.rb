@@ -4,7 +4,7 @@ result = 0
 
 prime_list.each do |p|
   digits = p.digits
-  combos = 2 ^ (digits.size)
+  combos = 2 ** (digits.size)
   indices = Hash.new{|h, k| h[k] = []}
   digits.each_with_index do |d, i|
     indices[d] << i
