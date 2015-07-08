@@ -22,15 +22,15 @@ s = "73167176531330624919225119674426574742355349194934
 
 a = Array.new(s.length)
 (0...s.length).each do |i|
-	a[i] = s[i].to_i
+  a[i] = s[i].to_i
 end
 
 max = 0
 (0..(s.length - 13)).each do |i|
-	prod = 1
-	(0...13).each do |j|
-		prod *= a[i + j]
-	end
-	max = prod if prod > max
+  prod = 1
+  (0...13).each do |j|
+    prod *= a[i + j]
+  end
+  max = prod if prod > max
 end
 puts max

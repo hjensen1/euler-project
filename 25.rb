@@ -9,10 +9,10 @@ n2 = 1
 i = 2
 
 while (Math.log(n2) / Math.log(10) < 1000)
-	i += 1
-	temp = n1
-	n1 = n2
-	n2 = n1 + temp
+  i += 1
+  temp = n1
+  n1 = n2
+  n2 = n1 + temp
 end
 
 puts n2

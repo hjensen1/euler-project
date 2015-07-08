@@ -26,17 +26,17 @@ a = input.split(' ')
 a.map!{|i| i.to_i}
 
 (0..16).each do |i|
-	(0...20).each do |j|
-		x = 20 * j + i
-		x_row = a[x] * a[x + 1] * a[x + 2] * a[x + 3]
-		y = 20 * i + j
-		y_row = a[y] * a[y + 20] * a[y + 40] * a[y + 60]
-		diag_down = j <= 16 ? a[x] * a[x + 21] * a[x + 42] * a[x + 63] : 0
-		diag_up = j <= 16 ? a[x + 3] * a[x + 22] * a[x + 41] * a[x + 60] : 0
-		[x_row, y_row, diag_down, diag_up].each do |n|
-			max = n if n > max
-		end
-	end
+  (0...20).each do |j|
+    x = 20 * j + i
+    x_row = a[x] * a[x + 1] * a[x + 2] * a[x + 3]
+    y = 20 * i + j
+    y_row = a[y] * a[y + 20] * a[y + 40] * a[y + 60]
+    diag_down = j <= 16 ? a[x] * a[x + 21] * a[x + 42] * a[x + 63] : 0
+    diag_up = j <= 16 ? a[x + 3] * a[x + 22] * a[x + 41] * a[x + 60] : 0
+    [x_row, y_row, diag_down, diag_up].each do |n|
+      max = n if n > max
+    end
+  end
 end
 
 puts max

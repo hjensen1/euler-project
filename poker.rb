@@ -4,7 +4,7 @@ class PokerHand
   include Comparable
   HANDS =  ["Straight Flush", "Four of a Kind", "Full House", "Flush", "Straight",
             "Three of a Kind", "Two Pairs", "Pair", "High Card"]
-	attr_reader :cards
+  attr_reader :cards
   
   def initialize(strings)
     strings = strings.split(" ") if strings.class == "".class
