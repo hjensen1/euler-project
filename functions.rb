@@ -62,6 +62,18 @@ def miller_rabin(n)
   return true
 end
 
+# removes all common factors from both x and y and returns both results
+def cancel_factors(x, y)
+  prime_list.each do |p|
+    while x % p == 0 && y % p == 0
+      x /= p
+      y /= p
+      break if p > x || p > y
+    end
+  end
+  return x, y
+end
+
 # convenience method / backwards compatibility for accessing the primes list
 def prime_list
   return Primes.prime_list
@@ -223,6 +235,7 @@ class Fixnum
     i = 0
     while (n > 1) do
       p = Primes.prime_list[i]
+      puts "Error: can't factorize large primes" if i >= Primes.prime_list.size
       if n % p == 0
         factors[p] += 1
         n /= p
