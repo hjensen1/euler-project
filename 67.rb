@@ -12,7 +12,7 @@ i = 0
 while i < a1.length
   a2 = []
   sum2 = []
-  n.times do 
+  n.times do
     a2 << a1[i]
     sum2 << 0
     i += 1

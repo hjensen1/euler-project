@@ -203,6 +203,29 @@ class Array
   def binclude?(n)
     return self.bsearch{ |x| x >= n } == n
   end
+  
+  def combinations(n)
+    combos = []
+    array = [self.first]
+    inds = [0]
+    i = 1
+    loop do
+      if array.size == n
+        combos << array.dup
+        array.pop
+        i = inds.pop + 1
+      elsif i >= self.size
+        break if inds[0] == self.size - 1 || inds.empty?
+        array.pop
+        i = inds.pop + 1
+      else
+        array << self[i]
+        inds << i
+        i += 1
+      end
+    end
+    combos
+  end
 end
 
 class Fixnum
@@ -230,6 +253,7 @@ class Fixnum
 
   # returns a hash of its prime factors to the number of times they occur
   def factorize
+    return {self => 1} if is_prime?
     n = self
     factors = Hash.new(0)
     i = 0
@@ -248,6 +272,7 @@ class Fixnum
 
   # takes an int and returns a list of all factors in order from smallest to largest
   def all_factors
+    return [1, self] if self.is_prime?
     limit = Math.sqrt(self)
     small = []
     large = []
@@ -303,7 +328,17 @@ class Fixnum
   def c(y)
     self.factorial / y.factorial / (self - y).factorial
   end
-
+  
+  # euler's totient function (phi)
+  # returns the number of integers less than self which are relatively prime to it.
+  def totient
+    factors = self.factorize.keys
+    result = self
+    factors.each do |f|
+      result = result * (f - 1) / f
+    end
+    result
+  end
 end
 
 class Bignum
@@ -336,6 +371,36 @@ class Timer
     @marks ||= {}
     @marks[num] = Time.now
   end
+end
+
+#solves linear diophantine equations with coefficients of a and b
+def diophantine(a, b)
+  swap = false
+  if a > b
+    a, b = b, a
+    swap = true
+  end
+  x = a
+  y = b
+  z = a % b
+  coefs = [x, y, z]
+  loop do
+    x, y, z = y, z, y % z
+    coefs << z
+    if z == 1
+      break
+    end
+  end
+  coefs.reverse!
+  x = 0
+  coefs.each_with_index do |c1, i|
+    break if i == coefs.size - 1
+    c2 = coefs[i + 1]
+    x = (1 - x * c2) / c1
+  end
+  y = (1 - x * b) / a
+  x, y = y, x if swap
+  return y, x
 end
 
 prime_list

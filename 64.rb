@@ -1,6 +1,6 @@
 require './functions.rb'
 
-def coefficients(n, s, b, c, results = [])
+def coefficients(n, s, b, c)
   b1 = (n - c * c) / b
   a1 = (s + c) / b1
   c1 = (a1 * b1) - c
@@ -13,7 +13,7 @@ def period(n)
   b = 1
   results = [[a,b,c]]
   loop do
-    a, b, c = coefficients(n, s, b, c, results)
+    a, b, c = coefficients(n, s, b, c)
     results << [a, b, c]
     break unless results.index(results.last) == results.size - 1
   end
