@@ -13,3 +13,5 @@ a.each_with_index do |s, i|
 end
 
 puts sum
+
+Timer.print

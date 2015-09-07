@@ -13,3 +13,5 @@ end
 
 puts hash
 puts hash.values.sort.last
+
+Timer.print

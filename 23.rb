@@ -20,3 +20,5 @@ results = []
 end
 
 puts results.inject(0){ |a,b| a + b }
+
+Timer.print

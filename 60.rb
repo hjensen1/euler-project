@@ -38,6 +38,7 @@ def solve(result)
 end
 
 result = solve([])
-Timer.print
 puts result.to_s
 puts result.sum
+
+Timer.print

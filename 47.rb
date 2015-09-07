@@ -14,3 +14,5 @@ first = 0
 end
 
 puts first
+
+Timer.print

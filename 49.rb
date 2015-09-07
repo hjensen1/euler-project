@@ -19,3 +19,5 @@ primes.each_with_index do |p, i|
     end
   end
 end
+
+Timer.print

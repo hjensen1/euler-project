@@ -24,3 +24,5 @@ result = 0
 end
 
 puts result
+
+Timer.print

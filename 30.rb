@@ -15,3 +15,5 @@ end
 
 puts list
 puts sum
+
+Timer.print

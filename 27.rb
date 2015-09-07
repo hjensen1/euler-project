@@ -40,3 +40,5 @@ puts max
 puts best_a
 puts best_b
 puts best_a * best_b
+
+Timer.print

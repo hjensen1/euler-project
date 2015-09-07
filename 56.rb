@@ -11,3 +11,5 @@ max = 0
 end
 
 puts max
+
+Timer.print

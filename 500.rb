@@ -1,6 +1,5 @@
 require './functions.rb'
 
-start = Time.now
 hash = {}
 small_hash = {}
 included = []
@@ -37,4 +36,5 @@ included.each do |p|
 end
 
 puts result
-puts "Took #{Time.now.to_f - start.to_f} seconds."
+
+Timer.print

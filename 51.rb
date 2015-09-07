@@ -28,3 +28,5 @@ prime_list.each do |p|
 end
 
 puts result
+
+Timer.print

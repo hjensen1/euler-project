@@ -19,3 +19,5 @@ end
 result += nums
 
 puts result.join("")
+
+Timer.print

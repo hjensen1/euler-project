@@ -15,3 +15,5 @@ list = []
 end
 
 puts 9999 - list.size
+
+Timer.print

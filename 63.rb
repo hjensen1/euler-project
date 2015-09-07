@@ -13,3 +13,5 @@ list = []
 end
 
 puts list.size
+
+Timer.print

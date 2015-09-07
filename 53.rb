@@ -13,3 +13,5 @@ count = 0
 end
 
 puts count
+
+Timer.print

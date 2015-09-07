@@ -14,3 +14,5 @@ end
 
 puts "#{list}"
 puts list.sum
+
+Timer.print

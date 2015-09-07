@@ -30,3 +30,5 @@ end
 
 puts list.to_s
 puts list.sum
+
+Timer.print

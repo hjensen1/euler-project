@@ -34,3 +34,5 @@ end
 puts n1
 puts n2
 puts n2 - n1
+
+Timer.print

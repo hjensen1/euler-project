@@ -26,3 +26,5 @@ bf.each do |k, v|
 end
 
 puts result
+
+Timer.print

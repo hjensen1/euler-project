@@ -17,6 +17,7 @@ side = 0
     break
   end
 end
-Timer.print
 
 puts side
+
+Timer.print

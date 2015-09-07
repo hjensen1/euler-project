@@ -18,3 +18,5 @@ a.each do |s|
 end
 
 puts count
+
+Timer.print

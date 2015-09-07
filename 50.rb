@@ -26,3 +26,5 @@ end
 
 puts max_count
 puts max
+
+Timer.print

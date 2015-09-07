@@ -8,3 +8,5 @@ total = 0
 end
 
 puts total
+
+Timer.print

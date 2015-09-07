@@ -11,3 +11,5 @@ while num_factors < 500
 end
 
 puts sum
+
+Timer.print

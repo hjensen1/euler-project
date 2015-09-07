@@ -20,3 +20,5 @@ prime_list.each do |p|
 end
 
 puts list.size
+
+Timer.print

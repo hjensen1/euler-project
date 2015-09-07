@@ -62,9 +62,10 @@ end
 
 result = solve(dls, [])
 
-Timer.print
 puts result.to_s
 puts result.sum
+
+Timer.print
 
 # a = Hash.new{ |h, k| h[k] = [] }
 # result.each do |x|

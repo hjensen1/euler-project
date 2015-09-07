@@ -24,3 +24,5 @@ threes.each do |n|
 end
 
 puts result
+
+Timer.print

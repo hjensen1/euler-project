@@ -18,3 +18,5 @@ end
 end
 
 puts hash.size
+
+Timer.print

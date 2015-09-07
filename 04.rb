@@ -8,3 +8,5 @@ max = 0
   end
 end
 puts max
+
+Timer.print

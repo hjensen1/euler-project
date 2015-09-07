@@ -9,3 +9,5 @@ prime_list.reverse.each do |p|
     break
   end
 end
+
+Timer.print
