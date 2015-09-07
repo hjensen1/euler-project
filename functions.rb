@@ -36,6 +36,31 @@ def prime_sieve2(limit)
   return primes
 end
 
+@counts_for_partitions = {}
+
+# returns the number of ways to split n identical items into groups
+def partitions(n)
+  if n == 0 || n == 1
+    return 1
+  elsif n < 0
+    return 0
+  elsif @counts_for_partitions[n]
+    return @counts_for_partitions[n]
+  else
+    sum = 0
+    (1..n).each do |k|
+      break if (k * (3 * k - 1)) / 2 > n
+      sign = (-1) ** (k + 1)
+      p1 = partitions(n - (k * (3 * k - 1)) / 2)
+      p2 = partitions(n - (k * (3 * k + 1)) / 2)
+      sum += sign * (p1 + p2)
+    end
+    @counts_for_partitions[n] = sum
+    return sum
+  end
+end
+
+
 # this is a quick pseudoprime test with 100% accuracy for numbers into the billions
 # unfortunately, just binary searching the prime_list is faster for numbers with those bounds
 def miller_rabin(n)
@@ -60,6 +85,36 @@ def miller_rabin(n)
     return false unless check
   end
   return true
+end
+
+#solves linear diophantine equations with coefficients of a and b
+def diophantine(a, b)
+  swap = false
+  if a > b
+    a, b = b, a
+    swap = true
+  end
+  x = a
+  y = b
+  z = a % b
+  coefs = [x, y, z]
+  loop do
+    x, y, z = y, z, y % z
+    coefs << z
+    if z == 1
+      break
+    end
+  end
+  coefs.reverse!
+  x = 0
+  coefs.each_with_index do |c1, i|
+    break if i == coefs.size - 1
+    c2 = coefs[i + 1]
+    x = (1 - x * c2) / c1
+  end
+  y = (1 - x * b) / a
+  x, y = y, x if swap
+  return y, x
 end
 
 # removes all common factors from both x and y and returns both results
@@ -339,6 +394,10 @@ class Fixnum
     end
     result
   end
+  
+  def is_square?
+    return Math.sqrt(self).to_i ** 2 == self
+  end
 end
 
 class Bignum
@@ -373,34 +432,95 @@ class Timer
   end
 end
 
-#solves linear diophantine equations with coefficients of a and b
-def diophantine(a, b)
-  swap = false
-  if a > b
-    a, b = b, a
-    swap = true
+# a class for generating lists of numbers which are pre-factored
+# this list will not be in numerical order, as they are generated
+# systematically to eliminate time spent calculating factors
+class Factors
+  attr_accessor :factors
+  
+  def initialize(n, factors = nil)
+    @value = n
+    @factors = factors ? factors : n.factorize
   end
-  x = a
-  y = b
-  z = a % b
-  coefs = [x, y, z]
-  loop do
-    x, y, z = y, z, y % z
-    coefs << z
-    if z == 1
-      break
+  
+  def method_missing(symbol, *args)
+    args.empty? ? @value.send(symbol) : @value.send(symbol, *args)
+  end
+  
+  def **(n)
+    value = @value ** n
+    factors = Hash.new(0)
+    @factors.each_pair do |k, v|
+      factors[k] = v * n
     end
+    Factors.new(value, factors)
   end
-  coefs.reverse!
-  x = 0
-  coefs.each_with_index do |c1, i|
-    break if i == coefs.size - 1
-    c2 = coefs[i + 1]
-    x = (1 - x * c2) / c1
+  
+  def enumerate_factors(min = 1, max = @value)
+    factors = Hash.new(0)
+    n = 1
+    indices = []
+    i = 0
+    results = min <= 1 ? [1] : []
+    loop do
+      p = @factors.keys[i]
+      if !p || factors[p] >= @factors[p]
+        i += 1
+        p = @factors.keys[i]
+      end
+      if p && n * p <= max
+        n *= p
+        factors[p] += 1
+        indices << i
+        next if n < min
+        results << n
+      else
+        break if indices.empty?
+        p = @factors.keys[indices.last]
+        n /= p
+        factors[p] -= 1
+        i = indices.pop + 1
+      end
+    end
+    results
   end
-  y = (1 - x * b) / a
-  x, y = y, x if swap
-  return y, x
+  
+  def self.enumerate(first, last)
+    factors = Hash.new(0)
+    n = 1
+    indices = []
+    i = 0
+    results = first <= 1 ? [1] : []
+    loop do
+      p = Primes.prime_list[i]
+      break if p > last
+      if n * p <= last
+        n *= p
+        factors[p] += 1
+        indices << i
+        next if n < first
+        results << Factors.new(n, factors.dup())
+      else
+        p = prime_list[indices.last]
+        n /= p
+        if factors[p] == 1
+          factors.delete(p)
+        else
+          factors[p] -= 1
+        end
+        i = indices.pop + 1
+      end
+    end
+    results
+  end
+  
+  def to_s
+    @value.to_s
+  end
+  
+  def inspect
+    @value.inspect
+  end
 end
 
 prime_list

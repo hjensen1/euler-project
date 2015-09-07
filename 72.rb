@@ -9,28 +9,8 @@ def totient(n, factors)
 end
 
 sum = 0
-factors = Hash.new(0)
-n = 1
-indices = []
-i = 0
-loop do
-  p = prime_list[i]
-  break if p > 1000000
-  if n * p <= 1000000
-    n *= p
-    factors[p] += 1
-    indices << i
-    sum += totient(n, factors.keys)
-  else
-    p = prime_list[indices.last]
-    n /= p
-    if factors[p] == 1
-      factors.delete(p)
-    else
-      factors[p] -= 1
-    end
-    i = indices.pop + 1
-  end
+Factors.enumerate(2, 1000000).each do |f|
+  sum += totient(f, f.factors.keys)
 end
 
 puts sum
