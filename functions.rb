@@ -2,38 +2,20 @@ require 'openssl'
 
 # returns a list of all primes up to limit using seive of eratothenes
 def prime_sieve(limit)
-  primes = []
-  (2..limit).each do |i|
-    composite = false
-    primes.each do |p|
-      if i % p == 0
-        composite = true
-        break
+  numbers = (0..limit).to_a
+  cancel = Array.new(numbers.size) { |i| i > 1 }
+  numbers.each_with_index do |x, i|
+    if cancel[i]
+      (2..(limit / x)).each do |j|
+        cancel[j * x] = false
       end
     end
-    next if composite
-    primes << i
   end
-  return primes
-end
-
-# returns a list of the first n primes using seive of eratothenes
-def prime_sieve2(limit)
   primes = []
-  i = 1
-  while (primes.size < limit) do
-    i += 1
-    composite = false
-    primes.each do |p|
-      if i % p == 0
-        composite = true
-        break
-      end
-    end
-    next if composite
-    primes << i
+  numbers.each_with_index do |x, i|
+    primes << x if cancel[i]
   end
-  return primes
+  primes
 end
 
 @counts_for_partitions = {}
@@ -57,6 +39,32 @@ def partitions(n)
     end
     @counts_for_partitions[n] = sum
     return sum
+  end
+end
+
+def coin_partitions(x, maximum = x, options = (1..x).to_a, recursive = false)
+  unless recursive && options == @options_for_coin_partitions
+    @counts_for_coin_partitions = {} unless recursive
+    @options_for_coin_partitions = options
+  end
+  min = options.first
+  maximum = x if maximum > x
+  if x <= 0
+    return maximum == 0 ? 1 : 0
+  elsif x < min || maximum < min
+    return 0
+  elsif maximum == min
+    return x % min == 0 ? 1 : 0
+  elsif @counts_for_coin_partitions[[x, maximum]]
+    return @counts_for_coin_partitions[[x, maximum]]
+  else
+    count = 0
+    options.each do |p|
+      break if p > maximum
+      count += coin_partitions(x - p, p, options, true)
+    end
+    @counts_for_coin_partitions[[x, maximum]] = count
+    return count
   end
 end
 
@@ -180,7 +188,7 @@ def read_input(name, split = ',', gsub = '"')
   a = File.open(name) do |file|
     result = file.readlines
     result.each_index do |i|
-      result[i] = result[i].split(split).map{|s| s.gsub(gsub, '')}
+      result[i] = result[i].strip.split(split).map{|s| s.gsub(gsub, '')}
     end
     result
   end
@@ -437,6 +445,7 @@ end
 # systematically to eliminate time spent calculating factors
 class Factors
   attr_accessor :factors
+  attr_accessor :value
   
   def initialize(n, factors = nil)
     @value = n
@@ -490,7 +499,7 @@ class Factors
     n = 1
     indices = []
     i = 0
-    results = first <= 1 ? [1] : []
+    results = first <= 1 ? [Factors.new(1)] : []
     loop do
       p = Primes.prime_list[i]
       break if p > last
@@ -520,6 +529,18 @@ class Factors
   
   def inspect
     @value.inspect
+  end
+  
+  def <=>(other)
+    if other.class == Factors
+      @value <=> other.value
+    else
+      @value <=> other
+    end
+  end
+  
+  def coerce(other)
+    [other, self.value]
   end
 end
 

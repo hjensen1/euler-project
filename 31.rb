@@ -1,7 +1,7 @@
 require './functions.rb'
 
-denoms = [200,100,50,20,10,5,2,1]
+denoms = [1,2,5,10,20,50,100,200]
 
-puts ways_to_sum(200, denoms)
+puts coin_partitions(200, 200, denoms)
 
 Timer.print

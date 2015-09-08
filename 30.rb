@@ -13,7 +13,7 @@ sum = 0
   list << s if s == i
 end
 
-puts list
+puts list.inspect
 puts sum
 
 Timer.print

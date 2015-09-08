@@ -8,7 +8,9 @@ n1 = 1
 n2 = 1
 i = 2
 
-while (Math.log(n2) / Math.log(10) < 1000)
+limit = 10 ** 999
+
+while (n2 < limit)
   i += 1
   temp = n1
   n1 = n2

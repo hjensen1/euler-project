@@ -1,14 +1,5 @@
+require './functions.rb'
 
-prod = 1
+puts 100.factorial.digits.sum
 
-(2..100).each do |i|
-  prod *= i
-end
-
-string = "#{prod}"
-sum = 0
-(0...string.length).each do |i|
-  sum += string[i].to_i
-end
-
-puts sum
+Timer.print

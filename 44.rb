@@ -11,7 +11,6 @@ n1 = 0
 n2 = 0
 
 numbers.each_with_index do |x, i|
-  puts i if i % 1000 == 0
   prev = 0
   ((i + 1)...numbers.size).each do |j|
     y = numbers[j]
