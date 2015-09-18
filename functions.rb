@@ -162,6 +162,7 @@ class Primes
         end
       end
     end
+    Timer.start
     @prime_list
   end
   
@@ -192,6 +193,33 @@ def read_input(name, split = ',', gsub = '"')
     end
     result
   end
+end
+
+# returns a list of all pythagorean triples where c^2 is at most max
+def pythagorean_triples(max, include_multiples = true)
+  triples = []
+  numbers = Factors.enumerate(1, Math.sqrt(max).to_i).sort
+  numbers.each_with_index do |n, i|
+    (0...i).each do |j|
+      m = numbers[j]
+      if (n % 2 == 0 || m % 2 == 0) && (n.factors.keys - m.factors.keys).size == n.factors.size
+        a = n * n - m * m
+        b = 2 * n * m
+        c = n * n + m * m
+        triples << [a, b, c]
+      end
+    end
+  end
+  if include_multiples
+    multiples = []
+    triples.each do |t|
+      (2..(max/t[2])).each do |i|
+        multiples << [t[0] * i, t[1] * i, t[2] * i]
+      end
+    end
+    triples += multiples
+  end
+  triples
 end
 
 def xor_encode(input, code)
@@ -322,7 +350,14 @@ class Fixnum
     i = 0
     while (n > 1) do
       p = Primes.prime_list[i]
-      puts "Error: can't factorize large primes" if i >= Primes.prime_list.size
+      if i >= Primes.prime_list.size
+        if n > Primes.prime_list.last * Primes.prime_list.last
+          puts "Error: can't factorize large primes"
+        else
+          factors[n] += 1
+          break
+        end
+      end
       if n % p == 0
         factors[p] += 1
         n /= p
@@ -544,6 +579,5 @@ class Factors
   end
 end
 
-prime_list
 Timer.start
 

@@ -1,7 +1,7 @@
 require './functions.rb'
 
 triples = []
-numbers = Factors.enumerate(1, 500).sort
+numbers = Factors.enumerate(1, 1000).sort
 numbers.each_with_index do |n, i|
   (0...i).each do |j|
     m = numbers[j]
