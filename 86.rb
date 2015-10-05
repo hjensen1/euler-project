@@ -9,7 +9,7 @@ numbers.each_with_index do |n, i|
       a = n * n - m * m
       b = 2 * n * m
       c = n * n + m * m
-      triples << [a, b, c]
+      triples << [a, b, c].sort
     end
   end
 end
@@ -20,22 +20,36 @@ triples.sort{ |a, b| a.sum - b.sum }
 def count_solutions(m)
   count = 0
   @triples.each do |t|
-    a = t[0, 2].max
-    break if a > m
-    bc = t.min
-    x = m / a
-    count += bc * x * (x + 1) / 4 - (bc % 2) * (x + 1) / 4
-    if bc * 2 > a
-      a, bc = bc, a
-      count += (2 * a - bc + 2) / 2
-      while (a * 2 <= m)
-        a += a
-        bc += bc
-        count += (2 * a - bc + 2) / 2
-      end
+    c1 = c = t[1]
+    ab1 = ab = t[0]
+    break if ab > m
+    while ab <= m
+      count += count2(ab, c, m) if c < 2 * ab
+      count += count1(ab, m) if c <= m
+      c += c1
+      ab += ab1
     end
   end
   count
 end
+
+def count1(ab, m)
+  b = [ab, m + 1].min - 1
+  a = ab - b
+  result = (b - a + 2) / 2
+  # puts "ab = #{ab}, m = #{m}, count1 = #{result}"
+  result
+end
+
+def count2(c, ab, m)
+  b = [ab - 1, [c, m].max].min
+  a = ab - b
+  result = (b - a + 2) / 2
+  # puts "ab = #{ab}, c = #{c}, count2 = #{result}"
+  result
+end
+
+puts count_solutions(100)
+puts (1..10000).to_a.bsearch { |a| count_solutions(a) >= 1_000_000 }
 
 Timer.print

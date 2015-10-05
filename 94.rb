@@ -1,22 +1,16 @@
 require './pell.rb'
 
-def area2(a, b, c)
-  (a + b + c) * (a + b - c) * (a - b + c) * (-a + b + c) / 16
-end
-
 count = 0
 results = pell_multiples(3) { |x, y| 4 * x * x < 1_000_000_000 }
 solutions = []
 results.each do |s|
   x, y = s
-  puts "#{2 * x * x - 2 * y * y}, #{x * x + y * y}, #{x * x + y * y}"
   a = [2 * x * x - 2 * y * y, x * x + y * y, x * x + y * y].sort
   solutions << a unless solutions.include?(a)
   n = 2 * y + x
   m = y
   p = 2 * (n * n + m * m) + 4 * m * n
   if p < 1_000_000_000
-    puts "#{4 * m * n}, #{n * n + m * m}, #{n * n + m * m}"
     a = [4 * m * n, n * n + m * m, n * n + m * m].sort
     solutions << a unless solutions.include?(a)
   end
@@ -25,7 +19,6 @@ results.each do |s|
     m = y
     p = 2 * (n * n + m * m) + 4 * m * n
     if p < 1_000_000_000
-      puts "#{4 * m * n}, #{n * n + m * m}, #{n * n + m * m}"
       a = [4 * m * n, n * n + m * m, n * n + m * m].sort
       solutions << a unless solutions.include?(a)
     end
@@ -38,7 +31,6 @@ solutions.each do |array|
 end
 
 puts solutions.inspect
-puts solutions.size
 puts sum
 
 Timer.print

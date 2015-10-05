@@ -284,11 +284,11 @@ end
 
 class Array
   def sum(start = 0)
-    self.inject(start){ |a, b| a + b}
+    self.inject(start, :+)
   end
 
   def product(start = 1)
-    self.inject(start){ |a,b| a * b }
+    self.inject(start, :*)
   end
 
   def binclude?(n)
