@@ -1,4 +1,8 @@
 require 'openssl'
+require './factors.rb'
+require './fixnum.rb'
+require './array.rb'
+require './timer.rb'
 
 # returns a list of all primes up to limit using seive of eratothenes
 def prime_sieve(limit)
@@ -135,6 +139,47 @@ def cancel_factors(x, y)
     end
   end
   return x, y
+end
+
+# iterates through all combinations of n items from the list
+# assuming the list is sorted, the resulting arrays will be sorted as well
+# returns the number of combinations iterated
+def iterate_combinations(list, n, dup = false)
+  result = [list.first]
+  indices = [0]
+  count = 0
+  loop do
+    if result.size == n
+      yield(dup ? result.dup : result)
+      count += 1
+      if indices[0] == list.size - n
+        break
+      else
+        if indices.last == list.size - 1
+          indices.pop
+          result.pop
+        end
+        indices[indices.size - 1] += 1
+        result[result.size - 1] = list[indices.last]
+      end
+    else
+      if indices.last == list.size - n + indices.size
+        indices.pop
+        result.pop
+        indices[indices.size - 1] += 1
+        result[result.size - 1] = list[indices.last]
+      else
+        indices << indices.last + 1
+        result << list[indices.last]
+      end
+    end
+  end
+  count
+end
+
+def iterate_orderings(list1)
+  list = list1.dup
+  even = true
 end
 
 # convenience method / backwards compatibility for accessing the primes list
@@ -282,302 +327,6 @@ def ways_to_sum(n, list)
   return count
 end
 
-class Array
-  def sum(start = 0)
-    self.inject(start, :+)
-  end
-
-  def product(start = 1)
-    self.inject(start, :*)
-  end
-
-  def binclude?(n)
-    return self.bsearch{ |x| x >= n } == n
-  end
-  
-  def combinations(n)
-    combos = []
-    array = [self.first]
-    inds = [0]
-    i = 1
-    loop do
-      if array.size == n
-        combos << array.dup
-        array.pop
-        i = inds.pop + 1
-      elsif i >= self.size
-        break if inds[0] == self.size - 1 || inds.empty?
-        array.pop
-        i = inds.pop + 1
-      else
-        array << self[i]
-        inds << i
-        i += 1
-      end
-    end
-    combos
-  end
-end
-
-class Fixnum
-  def is_prime?
-    if self > Primes.prime_list.last
-      sqrt = Math.sqrt(self)
-      Primes.prime_list.each do |p|
-        break if p > sqrt
-        return false if self % p == 0
-      end
-      return true
-    end
-    return Primes.prime_list.bsearch{|x| x >= self} == self
-  end
-  
-  def digits(base = 10)
-    n = self
-    list = []
-    while n > 0
-      list << n % base
-      n /= base
-    end
-    list.reverse
-  end
-
-  # returns a hash of its prime factors to the number of times they occur
-  def factorize
-    return {self => 1} if is_prime?
-    n = self
-    factors = Hash.new(0)
-    i = 0
-    while (n > 1) do
-      p = Primes.prime_list[i]
-      if i >= Primes.prime_list.size
-        if n > Primes.prime_list.last * Primes.prime_list.last
-          puts "Error: can't factorize large primes"
-        else
-          factors[n] += 1
-          break
-        end
-      end
-      if n % p == 0
-        factors[p] += 1
-        n /= p
-      else
-        i += 1
-      end
-    end
-    return factors
-  end
-
-  # takes an int and returns a list of all factors in order from smallest to largest
-  def all_factors
-    return [1, self] if self.is_prime?
-    limit = Math.sqrt(self)
-    small = []
-    large = []
-    (1..(limit.to_i)).each do |i|
-      next unless self % i == 0
-      small << i
-      large << self / i unless i == limit
-    end
-    small + large.reverse
-  end
-
-  NTW = {
-    0 => 'zero', 1 => 'one', 2 => 'two', 3 => 'three', 4 => 'four', 5 => 'five',
-    6 => 'six', 7 => 'seven', 8 => 'eight', 9 => 'nine', 10 => 'ten',
-    11 => 'eleven', 12 => 'twelve', 13 => 'thirteen', 14 => 'fourteen', 15 => 'fifteen',
-    16 => 'sixteen', 17 => 'seventeen', 18 => 'eighteen', 19 => 'nineteen', 20 => 'twenty',
-    30 => 'thirty', 40 => 'forty', 50 => 'fifty', 60 => 'sixty', 70 => 'seventy', 80 => 'eighty',
-    90 => 'ninety', 100 => 'hundred', 1000 => 'thousand', 1000000 => 'million', 1000000000 => 'billion',
-    1000000000000 => 'trillion', 1000000000000000 => 'quadrillion'
-  }
-
-  # takes a number less than 1 quintillion and returns that number spelled out in words
-  def to_words(recursive = false)
-    n = self
-    start = n
-    order = [1000000000000000, 1000000000000, 1000000000, 1000000, 1000]
-    parts = []
-    order.each do |i|
-      if n >= i
-        parts << (n / i).to_words(true) << NTW[i]
-        n = n % i
-      end
-    end
-    if n >= 100
-      parts << NTW[n / 100] << NTW[100]
-      n = n % 100
-    end
-    if n > 0 && start > 100 && !recursive
-      parts << 'and'
-    end
-    if n <= 20
-      parts << NTW[n] unless n == 0
-    else
-      parts << "#{NTW[n - n % 10]}#{n % 10 == 0 ? "" : "-#{NTW[n % 10]}"}"
-    end
-    parts.join(" ")
-  end
-
-  def factorial
-    return (1..self).to_a.inject(1){ |a, b| a * b }
-  end
-  
-  def c(y)
-    self.factorial / y.factorial / (self - y).factorial
-  end
-  
-  # euler's totient function (phi)
-  # returns the number of integers less than self which are relatively prime to it.
-  def totient
-    factors = self.factorize.keys
-    result = self
-    factors.each do |f|
-      result = result * (f - 1) / f
-    end
-    result
-  end
-  
-  def is_square?
-    return Math.sqrt(self).to_i ** 2 == self
-  end
-end
-
-class Bignum
-  def digits(base = 10)
-    n = self
-    list = []
-    while n > 0
-      list << n % base
-      n /= base
-    end
-    list.reverse
-  end
-end
-
-class Timer
-  def self.start
-    @start_time = Time.now
-  end
-  
-  def self.stop
-    @stop_time = Time.now
-  end
-  
-  def self.print(start = @start_time, stop = @stop_time)
-    stop ||= Time.now
-    puts "Took #{(stop.to_f - start.to_f).round(4)} seconds."
-  end
-  
-  def self.mark(num)
-    @marks ||= {}
-    @marks[num] = Time.now
-  end
-end
-
-# a class for generating lists of numbers which are pre-factored
-# this list will not be in numerical order, as they are generated
-# systematically to eliminate time spent calculating factors
-class Factors
-  attr_accessor :factors
-  attr_accessor :value
-  
-  def initialize(n, factors = nil)
-    @value = n
-    @factors = factors ? factors : n.factorize
-  end
-  
-  def method_missing(symbol, *args)
-    args.empty? ? @value.send(symbol) : @value.send(symbol, *args)
-  end
-  
-  def **(n)
-    value = @value ** n
-    factors = Hash.new(0)
-    @factors.each_pair do |k, v|
-      factors[k] = v * n
-    end
-    Factors.new(value, factors)
-  end
-  
-  def enumerate_factors(min = 1, max = @value)
-    factors = Hash.new(0)
-    n = 1
-    indices = []
-    i = 0
-    results = min <= 1 ? [1] : []
-    loop do
-      p = @factors.keys[i]
-      if !p || factors[p] >= @factors[p]
-        i += 1
-        p = @factors.keys[i]
-      end
-      if p && n * p <= max
-        n *= p
-        factors[p] += 1
-        indices << i
-        next if n < min
-        results << n
-      else
-        break if indices.empty?
-        p = @factors.keys[indices.last]
-        n /= p
-        factors[p] -= 1
-        i = indices.pop + 1
-      end
-    end
-    results
-  end
-  
-  def self.enumerate(first, last)
-    factors = Hash.new(0)
-    n = 1
-    indices = []
-    i = 0
-    results = first <= 1 ? [Factors.new(1)] : []
-    loop do
-      p = Primes.prime_list[i]
-      break if p > last
-      if n * p <= last
-        n *= p
-        factors[p] += 1
-        indices << i
-        next if n < first
-        results << Factors.new(n, factors.dup())
-      else
-        p = prime_list[indices.last]
-        n /= p
-        if factors[p] == 1
-          factors.delete(p)
-        else
-          factors[p] -= 1
-        end
-        i = indices.pop + 1
-      end
-    end
-    results
-  end
-  
-  def to_s
-    @value.to_s
-  end
-  
-  def inspect
-    @value.inspect
-  end
-  
-  def <=>(other)
-    if other.class == Factors
-      @value <=> other.value
-    else
-      @value <=> other
-    end
-  end
-  
-  def coerce(other)
-    [other, self.value]
-  end
-end
 
 Timer.start
 
