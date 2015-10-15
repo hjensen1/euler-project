@@ -169,4 +169,38 @@ class Factors
       @value == other
     end
   end
+  
+  def <=>(other)
+    if other.class == Factors
+      @value <=> other.value
+    else
+      @value <=> other
+    end
+  end
+  
+  def cancel_factors(other)
+    other = Factors.new(other) unless other.class == Factors
+    factors1 = Hash.new(0)
+    factors2 = Hash.new(0)
+    val1 = 1
+    val2 = 1
+    @factors.each_pair do |f, count1|
+      count2 = other.factors[f]
+      diff = (count1 - count2).abs
+      if count1 > count2
+        factors1[f] = diff
+        val1 *= f ** diff
+      else
+        factors2[f] = diff
+        val2 *= f ** diff
+      end
+    end
+    other.factors.each_pair do |f, count|
+      unless @factors[f] > 0
+        factors2[f] = count
+        val2 *= f ** count
+      end
+    end
+    [Factors.new(val1, factors1), Factors.new(val2, factors2)]
+  end
 end

@@ -22,9 +22,9 @@ def count_solutions(m)
   @triples.each do |t|
     c1 = c = t[1]
     ab1 = ab = t[0]
-    break if ab > m
+    break if ab > 3 * m
     while ab <= m
-      count += count2(ab, c, m) if c < 2 * ab
+      count += count2(ab, c) if c < 2 * ab
       count += count1(ab, m) if c <= m
       c += c1
       ab += ab1
@@ -36,17 +36,13 @@ end
 def count1(ab, m)
   b = [ab, m + 1].min - 1
   a = ab - b
-  result = (b - a + 2) / 2
-  # puts "ab = #{ab}, m = #{m}, count1 = #{result}"
-  result
+  (b - a + 2) / 2
 end
 
-def count2(c, ab, m)
-  b = [ab - 1, [c, m].max].min
+def count2(c, ab)
+  b = [ab - 1, c].min
   a = ab - b
-  result = (b - a + 2) / 2
-  # puts "ab = #{ab}, c = #{c}, count2 = #{result}"
-  result
+  (b - a + 2) / 2
 end
 
 puts count_solutions(100)

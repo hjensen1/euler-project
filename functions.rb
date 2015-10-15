@@ -177,9 +177,61 @@ def iterate_combinations(list, n, dup = false)
   count
 end
 
-def iterate_orderings(list1)
-  list = list1.dup
-  even = true
+# iterates through all permutations of the items in list, in sorted order
+def iterate_permutations(list)
+  included = Array.new(list.size, false)
+  included[0] = true
+  result = [0]
+  max = list.size - 1
+  loop do
+    if result.size == list.size
+      yield(result.map { |i| list[i] })
+      included[result.pop] = false
+      last = result.last
+      while included[result.last]
+        result[result.size - 1] += 1
+      end
+      included[last] = false
+      included[result.last] = true if result.last <= max
+    else
+      if result.last > max
+        result.pop
+        break if result.empty?
+        last = result.last
+      else
+        last = nil
+        result << 0
+      end
+      while included[result.last]
+        result[result.size - 1] += 1
+      end
+      included[last] = false if last
+      included[result.last] = true if result.last <= max
+    end
+  end
+end
+
+# iterates through all selections of n items from list
+def iterate_all(list, n)
+  result = [0]
+  max = list.size - 1
+  loop do
+    if result.size == n
+      yield(result.map { |i| list[i] })
+      if result.last >= max
+        result.pop
+      end
+      result[result.size - 1] += 1
+    else
+      if result.last > max
+        result.pop
+        break if result.empty?
+        result[result.size - 1] += 1
+      else
+        result << 0
+      end
+    end
+  end
 end
 
 # convenience method / backwards compatibility for accessing the primes list
@@ -325,6 +377,23 @@ def ways_to_sum(n, list)
     count += ways_to_sum(n - list[0] * i, list[1, list.length])
   end
   return count
+end
+
+def gcd(a, b)
+  factors = a.factorize
+  result = 1
+  factors.each_pair do |f, count|
+    count.times do
+      break unless b % f == 0
+      b /= f
+      result *= f
+    end
+  end
+  result
+end
+
+def lcm(a, b)
+  a * b / gcd(a, b)
 end
 
 
