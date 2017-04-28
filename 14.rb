@@ -1,3 +1,4 @@
+require './functions.rb'
 
 hash = {}
 max = 0
@@ -31,3 +32,5 @@ end
 
 puts max_key
 puts "#{max} steps"
+
+Timer.print

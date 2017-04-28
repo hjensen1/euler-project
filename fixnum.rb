@@ -1,15 +1,15 @@
-
 class Fixnum
   def is_prime?
-    if self > Primes.prime_list.last
-      sqrt = Math.sqrt(self)
+    n = self < 0 ? -self : self
+    if n > Primes.prime_list.last
+      sqrt = Math.sqrt(n)
       Primes.prime_list.each do |p|
         break if p > sqrt
-        return false if self % p == 0
+        return false if n % p == 0
       end
       return true
     end
-    return Primes.prime_list.bsearch{|x| x >= self} == self
+    return Primes.prime_list.bsearch{|x| x >= n} == n
   end
   
   def digits(base = 10)
@@ -17,14 +17,14 @@ class Fixnum
     list = []
     while n > 0
       list << n % base
-      n /= base
+      n = (n / base).to_i # to_i for compatibility with Fractions class
     end
     list.reverse
   end
 
   # returns a hash of its prime factors to the number of times they occur
   def factorize
-    n = self
+    n = self < 0 ? -self : self
     factors = Hash.new(0)
     if is_prime?
       factors[n] = 1
@@ -103,7 +103,7 @@ class Fixnum
   end
 
   def factorial
-    return (1..self).to_a.inject(1){ |a, b| a * b }
+    return (1..self).inject(&:*)
   end
   
   def c(y)
@@ -135,5 +135,47 @@ class Bignum
       n /= base
     end
     list.reverse
+  end
+
+  def is_prime?
+    n = self < 0 ? -self : self
+    if n > Primes.prime_list.last
+      sqrt = Math.sqrt(n)
+      Primes.prime_list.each do |p|
+        break if p > sqrt
+        return false if n % p == 0
+      end
+      return true
+    end
+    return Primes.prime_list.bsearch{|x| x >= n} == n
+  end
+
+  # returns a hash of its prime factors to the number of times they occur
+  def factorize
+    n = self < 0 ? -self : self
+    factors = Hash.new(0)
+    if is_prime?
+      factors[n] = 1
+      return factors
+    end
+    i = 0
+    while (n > 1) do
+      p = Primes.prime_list[i]
+      if i >= Primes.prime_list.size
+        if n > Primes.prime_list.last * Primes.prime_list.last
+          puts "Error: can't factorize large primes"
+        else
+          factors[n] += 1
+          break
+        end
+      end
+      if n % p == 0
+        factors[p] += 1
+        n /= p
+      else
+        i += 1
+      end
+    end
+    return factors
   end
 end

@@ -1,3 +1,4 @@
+require './functions.rb'
 
 string = "
 75
@@ -45,3 +46,4 @@ sums[0][0] = a[0][0]
 end
 
 puts sums.last.max
+Timer.print

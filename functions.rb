@@ -3,6 +3,7 @@ require './factors.rb'
 require './fixnum.rb'
 require './array.rb'
 require './timer.rb'
+require './polynomial.rb'
 
 # returns a list of all primes up to limit using seive of eratothenes
 def prime_sieve(limit)
